@@ -54,9 +54,29 @@ function createMarkers(response) {
         let mag = quake.properties.mag;
         let depth = quake.geometry.coordinates[2];
 
-        let marker = L.marker([lat, lon]).bindPopup(`<h3>Magnitude: ${mag}</h3><br>Location: ${lat}, ${lon}<br>Depth: ${depth}`);
+        let marker = L.circle([lat, lon],{
+            radius: mag *10000,
+            color: scaleColor(depth),
+            fillOpacity: 0.7,
+        }).bindPopup(`<h3>Magnitude: ${mag}</h3><br>Location: ${lat}, ${lon}<br>Depth: ${depth}`);
 
         markers.push(marker);
+    };
+
+    function scaleColor(depth){
+        if (depth < 10) {
+            return 'green';
+        } else if (depth < 30) {
+            return 'yellow';
+        } else if (depth < 50) {
+            return 'orange';
+        } else if (depth < 70) {
+            return 'red';
+        } else if (depth < 90) {
+            return 'darkred';
+        } else {
+            return 'black';
+        };
     };
 
     // return L.layerGroup(array)
