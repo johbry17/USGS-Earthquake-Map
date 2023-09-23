@@ -6,7 +6,7 @@
 // pass it to a function createMap(createMarkers(d3Response))
 d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson").then(function(response){
     console.log(response);
-    createMap(response);
+    createMap(createMarkers(response));
 });
 
 //function createMap(markers) {
@@ -16,20 +16,19 @@ function createMap(markers) {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       });
 
-    // create objects to hold base and overlay map for L.control
-    let baseMaps = {
-        "Base Map": base,
-    };
+    let earthquakes = markers;
 
-    let earthquakes = {
-        "Earthquakes": markers
+    // create objects to hold base and overlay map for L.control
+    let maps = {
+        "Base Map": base,
+        "Earthquakes": earthquakes,
     };
 
     // create map with center, zoom, initial layers
     let map = L.map("map", {
         center: [39.8283, -118.5795],
         zoom: 5,
-        layers: [base]
+        layers: [base, earthquakes]
     });
 
     // create L.control with legend
@@ -38,15 +37,32 @@ function createMap(markers) {
 };
 
 // function createMarkers()
+function createMarkers(response) {
     // store data property 
+    let quakes = response.features;
 
     // create array
+    let markers = [];
 
     // for loop, create marker, bidPopup, push to array
     // marker size goes up with magnitude, marker color gets darker as depth increases
+    for (let i = 0; i < quakes.length; i++) {
+        // store variables
+        let quake = quakes[i];
+        let lat = quake.geometry.coordinates[1];
+        let lon = quake.geometry.coordinates[0];
+        let mag = quake.properties.mag;
+        let depth = quake.geometry.coordinates[2];
+
+        let marker = L.marker([lat, lon]).bindPopup(`<h3>Magnitude: ${mag}</h3><br>Location: ${lat}, ${lon}<br>Depth: ${depth}`);
+
+        markers.push(marker);
+    };
 
     // return L.layerGroup(array)
+    return L.layerGroup(markers);
 
+};
 
 
 // Bonus
