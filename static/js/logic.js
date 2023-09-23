@@ -4,21 +4,38 @@
 // remember, d3 is mean and doesn't like to share data outside of the call
 // create a global to save the data? or just pass it to a function?
 // pass it to a function createMap(createMarkers(d3Response))
+d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson").then(function(response){
+    console.log(response);
+    createMap(response);
+});
 
 //function createMap(markers) {
-    // create a titleLayer, something like:
-    // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    //   });
+function createMap(markers) {
+    // create a titleLayer
+    let base = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      });
 
     // create objects to hold base and overlay map for L.control
+    let baseMaps = {
+        "Base Map": base,
+    };
+
+    let earthquakes = {
+        "Earthquakes": markers
+    };
 
     // create map with center, zoom, initial layers
+    let map = L.map("map", {
+        center: [39.8283, -118.5795],
+        zoom: 5,
+        layers: [base]
+    });
 
     // create L.control with legend
     // legend shows color-coded depth (3rd coordinate features.geometry.coordinates.depth)
 
-// };
+};
 
 // function createMarkers()
     // store data property 
