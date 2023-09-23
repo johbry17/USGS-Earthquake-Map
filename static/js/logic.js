@@ -1,26 +1,23 @@
 // pick a data set from USGS
 
 // use url to call for data with d3
-// remember, d3 is mean and doesn't like to share data outside of the call
-// create a global to save the data? or just pass it to a function?
-// pass it to a function createMap(createMarkers(d3Response))
 d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson").then(function(response){
-    console.log(response);
     createMap(createMarkers(response));
 });
 
 //function createMap(markers) {
-function createMap(markers) {
+function createMap(earthquakes) {
     // create a titleLayer
     let base = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      });
+        });
 
-    let earthquakes = markers;
-
-    // create objects to hold base and overlay map for L.control
+    // create objects to hold base the map...
+    let baseMap = {
+        "Street Map": base,
+    };
+    // ...and overlay maps for L.control
     let maps = {
-        "Base Map": base,
         "Earthquakes": earthquakes,
     };
 
@@ -34,35 +31,50 @@ function createMap(markers) {
     // create L.control with legend
     // legend shows color-coded depth (3rd coordinate features.geometry.coordinates.depth)
 
+    // create toggle for map layers
+    L.control.layers(baseMap, maps, {
+        collapsed: false,
+    }).addTo(map);
+
 };
 
 // function createMarkers()
 function createMarkers(response) {
     // store data property 
-    let quakes = response.features;
+    let markers = L.geoJSON(response, {
 
-    // create array
-    let markers = [];
+        // i stole pointToLayer from the leaflet documentation
+        // marker size goes up with magnitude, marker color gets darker as depth increases
+        pointToLayer: function(feature, latlng) {
+            // store variables
+            let lat = feature.geometry.coordinates[1];
+            let lon = feature.geometry.coordinates[0];
+            let mag = feature.properties.mag;
+            let depth = feature.geometry.coordinates[2];
 
-    // for loop, create marker, bidPopup, push to array
-    // marker size goes up with magnitude, marker color gets darker as depth increases
-    for (let i = 0; i < quakes.length; i++) {
-        // store variables
-        let quake = quakes[i];
-        let lat = quake.geometry.coordinates[1];
-        let lon = quake.geometry.coordinates[0];
-        let mag = quake.properties.mag;
-        let depth = quake.geometry.coordinates[2];
+            // create circle markers and popup, with radius of magnitude and color set by scaleColor() function
+            let circle = L.circle(latlng,{
+                radius: mag *10000,
+                color: scaleColor(depth),
+                fillOpacity: 0.7,
+            }).bindPopup(`<h3>Magnitude: ${mag}</h3><br>Location: ${lat}, ${lon}<br>Depth: ${depth}`);
+            
+            // open popup on mouseover
+            circle.on('mouseover', function(e) {
+                this.openPopup();
+            });
 
-        let marker = L.circle([lat, lon],{
-            radius: mag *10000,
-            color: scaleColor(depth),
-            fillOpacity: 0.7,
-        }).bindPopup(`<h3>Magnitude: ${mag}</h3><br>Location: ${lat}, ${lon}<br>Depth: ${depth}`);
+            // close popup on mouseover
+            circle.on('mouseout', function(e) {
+                this.closePopup();
+            });
 
-        markers.push(marker);
-    };
+            // return circle
+            return circle;
+        }
+    });
 
+    // function to change marker color based on depth
     function scaleColor(depth){
         if (depth < 10) {
             return 'green';
@@ -79,11 +91,11 @@ function createMarkers(response) {
         };
     };
 
-    // return L.layerGroup(array)
-    return L.layerGroup(markers);
+    // return entire marker layer
+    return markers;
 
 };
-
+    
 
 // Bonus
 
