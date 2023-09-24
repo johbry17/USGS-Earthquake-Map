@@ -8,3 +8,22 @@ body,
 html {
   height: 100%;
 }
+
+.custom-legend {
+  background-color: white;
+  font-size: 16px;
+  padding: 10px;
+  border: 5px solid #ccc;
+}
+
+.legend-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.legend-color {
+  width: 140px;
+  height: 24px;
+  display: inline-block;
+  margin-right: 5px;
+}

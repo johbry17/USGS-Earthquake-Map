@@ -1,6 +1,4 @@
-// pick a data set from USGS
-
-// use url to call for data with d3
+// call for USGS eathquake data for the past week with d3
 d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson").then(function(response){
     createMap(createMarkers(response));
 });
@@ -29,7 +27,51 @@ function createMap(earthquakes) {
     });
 
     // create L.control with legend
-    // legend shows color-coded depth (3rd coordinate features.geometry.coordinates.depth)
+    let legend = L.control({
+        position: "bottomright",
+    });
+
+    // set values for legend
+    let values = [
+            {
+            label: "<10",
+            color: "green",
+            },
+            {
+            label: "10-30",
+            color: "yellow",
+            },
+            {
+            label: "30-50",
+            color: "orange",
+            },
+            {
+            label: "50-70",
+            color: "red",
+            },
+            {
+            label: "70-90",
+            color: "darkred",
+            },
+            {
+            label: "90+",
+            color: "black",
+            },
+        ];
+
+    legend.onAdd = function() {
+        let div = L.DomUtil.create("div", "custom-legend");
+
+        div.innerHTML = '<div class="legend-title">Depth below ground (km)</div>';
+
+        for (let value of values) {
+            div.innerHTML += `<div><i class="legend-color" style="background:${value.color}"></i>${value.label}</div>`
+        }
+
+        return div;
+    }
+    
+    legend.addTo(map);
 
     // create toggle for map layers
     L.control.layers(baseMap, maps, {
