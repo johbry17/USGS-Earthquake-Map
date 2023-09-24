@@ -1,6 +1,9 @@
 // global variable to pass to createMap because my computer is mean
 let tectonicPlates = L.layerGroup();
 
+// another global for colors
+colorScale = d3.scaleLinear().domain([0, 10, 30, 50, 70, 90]).range(['greenyellow', 'gold', 'orange', 'red', 'firebrick', 'darkred']);
+
 // call for USGS eathquake data for the past week with d3
 d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson").then(function(response){
     createMap(createMarkers(response));
@@ -11,21 +14,31 @@ d3.json("static/data/tectonic_plates.json").then(function(plates) {
     tectonicPlates = L.geoJSON(plates, {
         style: {
             color: "red",
-            weight: 2,
+            weight: 5,
         },
     }).addTo(tectonicPlates);
 });
 
-//function createMap(markers) {
+// function to create map and layers
 function createMap(earthquakes) {
     // create a titleLayer
     let base = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         });
+    
+    // create other layers
+    let satMap = L.esri.basemapLayer('Imagery');
 
     // create objects to hold base the map...
     let baseMap = {
         "Street Map": base,
+        "Satellite Map": satMap,
+        "National Geographic": L.esri.basemapLayer('NationalGeographic'),
+        "Topographic": L.esri.basemapLayer('Topographic'),
+        "Physical": L.esri.basemapLayer('Physical'),
+        "Oceans": L.esri.basemapLayer('Oceans'),
+        "Grayscale": L.esri.basemapLayer('Gray'),
+        "Firefly": L.esri.basemapLayer('ImageryFirefly'),
     };
     // ...and overlay maps for L.control
     let maps = {
@@ -37,7 +50,7 @@ function createMap(earthquakes) {
     map = L.map("map", {
         center: [39.8283, -118.5795],
         zoom: 5,
-        layers: [base, earthquakes]
+        layers: [satMap, earthquakes]
     });
 
     // create L.control with legend
@@ -45,42 +58,17 @@ function createMap(earthquakes) {
         position: "bottomright",
     });
 
-    // set values for legend
-    let values = [
-            {
-            label: "<10",
-            color: "green",
-            },
-            {
-            label: "10-30",
-            color: "yellow",
-            },
-            {
-            label: "30-50",
-            color: "orange",
-            },
-            {
-            label: "50-70",
-            color: "red",
-            },
-            {
-            label: "70-90",
-            color: "darkred",
-            },
-            {
-            label: "90+",
-            color: "black",
-            },
-        ];
-
     legend.onAdd = function() {
         let div = L.DomUtil.create("div", "custom-legend");
 
-        div.innerHTML = '<div class="legend-title">Depth below ground (km)</div>';
+        labels = ['<10', '10-30', '30-50', '50-70', '70-90', '90+'];
 
-        for (let value of values) {
-            div.innerHTML += `<div><i class="legend-color" style="background:${value.color}"></i>${value.label}</div>`
-        }
+        div.innerHTML = '<div class="legend-title">Depth (km)<br>below ground</div>';
+
+        colorScale.domain().forEach(function(depth, index) {
+            color = colorScale(depth);
+            div.innerHTML += `<div><i class="legend-color" style="background:${color}"></i>${labels[index]}`
+        })
 
         return div;
     }
@@ -110,8 +98,8 @@ function createMarkers(response) {
 
             // create circle markers and popup, with radius of magnitude and color set by scaleColor() function
             let circle = L.circle(latlng,{
-                radius: mag *10000,
-                color: scaleColor(depth),
+                radius: mag *20000,
+                color: colors(depth),
                 fillOpacity: 0.7,
             }).bindPopup(`<h3>Magnitude: ${mag}</h3><br>Location: ${lat}, ${lon}<br>Depth: ${depth}`);
             
@@ -131,20 +119,8 @@ function createMarkers(response) {
     });
 
     // function to change marker color based on depth
-    function scaleColor(depth){
-        if (depth < 10) {
-            return 'green';
-        } else if (depth < 30) {
-            return 'yellow';
-        } else if (depth < 50) {
-            return 'orange';
-        } else if (depth < 70) {
-            return 'red';
-        } else if (depth < 90) {
-            return 'darkred';
-        } else {
-            return 'black';
-        };
+    function colors(depth) {
+        return colorScale(depth);
     };
 
     // return entire marker layer
