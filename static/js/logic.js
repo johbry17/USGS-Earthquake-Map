@@ -1,6 +1,19 @@
+// global variable to pass to createMap because my computer is mean
+let tectonicPlates = L.layerGroup();
+
 // call for USGS eathquake data for the past week with d3
 d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson").then(function(response){
     createMap(createMarkers(response));
+});
+
+// add tectonic plates layer to map
+d3.json("static/data/tectonic_plates.json").then(function(plates) {
+    tectonicPlates = L.geoJSON(plates, {
+        style: {
+            color: "red",
+            weight: 2,
+        },
+    }).addTo(tectonicPlates);
 });
 
 //function createMap(markers) {
@@ -17,10 +30,11 @@ function createMap(earthquakes) {
     // ...and overlay maps for L.control
     let maps = {
         "Earthquakes": earthquakes,
+        "Tectonic Plates": tectonicPlates,
     };
 
     // create map with center, zoom, initial layers
-    let map = L.map("map", {
+    map = L.map("map", {
         center: [39.8283, -118.5795],
         zoom: 5,
         layers: [base, earthquakes]
@@ -137,9 +151,3 @@ function createMarkers(response) {
     return markers;
 
 };
-    
-
-// Bonus
-
-// add extra layer(s) and toggle L.control in createMap
-// presumably just use a d3 call to the tectonic plate dataset and creatMap(createMarkers(response))?
