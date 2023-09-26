@@ -1,31 +1,20 @@
-// global variable to pass to createMap because my computer is mean
-let tectonicPlates = L.layerGroup();
-
-// another global for colors
+// global variable for colors
 colorScale = d3
   .scaleLinear()
   .domain([0, 10, 30, 50, 70, 90])
   .range(["limegreen", "gold", "orange", "red", "firebrick", "darkred"]);
 
-// call for USGS eathquake data for the past week with d3
+// call USGS eathquake data for the past week with d3
 d3.json(
   "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
-).then(function (response) {
-  createMap(createMarkers(response));
+).then(function (earthquakes) {
+    d3.json("static/data/tectonic_plates.json").then(function (plates) {
+        createMap(createMarkers(earthquakes), tecPlates(plates));
+    });
 });
 
-// add tectonic plates layer to map
-d3.json("static/data/tectonic_plates.json").then(function (plates) {
-  tectonicPlates = L.geoJSON(plates, {
-    style: {
-      color: "red",
-      weight: 5,
-    },
-  }).addTo(tectonicPlates);
-});
-
-// function to create map and layers
-function createMap(earthquakes) {
+// function to create base map and layers
+function createMap(earthquakes, tectonicPlates) {
   // create base layer
   let satMap = L.esri.basemapLayer("Imagery");
 
@@ -42,7 +31,7 @@ function createMap(earthquakes) {
   };
   // ...and overlay maps
   let maps = {
-    Earthquakes: earthquakes,
+    "Earthquakes": earthquakes,
     "Tectonic Plates": tectonicPlates,
   };
 
@@ -64,11 +53,12 @@ function createMap(earthquakes) {
     .addTo(map);
 }
 
-// function createMarkers()
+
+// function to create earthquake markers
 function createMarkers(response) {
-  // store data property
+  // store data
   let markers = L.geoJSON(response, {
-    // i used pointToLayer from the leaflet geoJSON documentation
+    // pointToLayer from the leaflet geoJSON documentation
     // marker size goes up with magnitude, marker color gets darker as depth increases
     pointToLayer: function (feature, latlng) {
       // store variables
@@ -103,6 +93,20 @@ function createMarkers(response) {
   // return entire marker layer
   return markers;
 }
+
+
+// function to create tectonic plates layer
+function tecPlates(plates) {
+  let tectonicPlates = L.geoJSON(plates, {
+    style: {
+      color: "red",
+      weight: 5,
+    },
+  });
+
+  return tectonicPlates;
+};
+
 
 function addLegend() {
   // create L.control with legend
