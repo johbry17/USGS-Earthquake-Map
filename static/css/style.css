@@ -28,3 +28,7 @@ html {
   display: inline-block;
   margin-right: 5px;
 }
+
+.legend-mini-text {
+  font-size: 10px;
+}
