@@ -40,6 +40,8 @@ function createMap(earthquakes, tectonicPlates, heat) {
     center: [39.8283, -118.5795],
     zoom: 4,
     layers: [satMap, earthquakes],
+    // loads data when crossing the international date line
+    worldCopyJump: true,
   });
 
   // create toggle for map layers
@@ -139,7 +141,7 @@ function heatMap(data) {
 
   return L.heatLayer(coords, {
     radius: 40,
-    blur: 5,
+    blur: 2,
     gradient: { 0.1: "orange", 0.3: "red", 0.6: "firebrick", 1.0: "darkred" },
   });
 }
