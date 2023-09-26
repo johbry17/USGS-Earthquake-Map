@@ -30,4 +30,4 @@ Dataset provided by the [United States Geological Survey (USGS)](http://earthqua
 Thanks to Geronimo Perez for feedback and assistance
 
 ## Author
-Bryan Johns, October, 2023
+Bryan Johns, September, 2023
