@@ -72,11 +72,11 @@ function createMap(earthquakes, tectonicPlates, heat) {
 function tecPlates(plates) {
   return L.geoJSON(plates, {
     style: {
-      color: "firebrick",
+      color: "darkred",
       weight: 5,
-    },
+    }
   });
-}
+};
 
 // create heat map layer
 function heatMap(data) {
@@ -91,7 +91,7 @@ function heatMap(data) {
     blur: 2,
     gradient: { 0.1: "orange", 0.3: "red", 0.6: "firebrick", 1.0: "darkred" },
   });
-}
+};
 
 // function to create earthquake marker layer
 function createMarkers(response) {
@@ -135,7 +135,7 @@ function createMarkers(response) {
 
 // create color range for createMarkers() and addLegend()
 function colors(depth) {
-  if (depth < 10) return "limegreen";
+  if (depth < 10) return "mediumseagreen";
   if (depth < 30) return "gold";
   if (depth < 50) return "orange";
   if (depth < 70) return "red";

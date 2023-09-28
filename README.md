@@ -19,7 +19,17 @@ View the [website](https://johbry17.github.io/15-earthquakes-leaflet-javascript/
 
 ## Gallery
 
-Insert pictures
+Sample earthquake data:
+
+![Markers for earthquakes](./static/images/earthquakeMarkers.png)
+
+Tectonic plate layer:
+
+![Tectonic plates](./static/images/tectonicPlates.png)
+
+Heat map:
+
+![Heat map](./static/images/markesPlatesHeat.png)
 
 ## References
 
