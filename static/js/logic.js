@@ -2,7 +2,7 @@
 d3.json(
   "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson",
 ).then(function (earthquakes) {
-  d3.json("static/data/tectonic_plates.json").then(function (plates) {
+  d3.json("static/data/tectonic_plates.json").then((plates) => {
     // createMarkers, tecPlates, heatMap are all layers added to createMap
     createMap(
       createMarkers(earthquakes),
@@ -19,10 +19,8 @@ function createMap(earthquakes, tectonicPlates, heat) {
 
   // create objects to hold the base maps...
   let baseMap = {
-    // Street: L.esri.basemapLayer("Streets"),
     Satellite: satMap,
     "National Geographic": L.esri.basemapLayer("NationalGeographic"),
-    // Topographic: L.esri.basemapLayer("Topographic"),
     Physical: L.esri.basemapLayer("Physical"),
     Oceans: L.esri.basemapLayer("Oceans"),
     Grayscale: L.esri.basemapLayer("Gray"),
@@ -36,7 +34,7 @@ function createMap(earthquakes, tectonicPlates, heat) {
   };
 
   // create map with center, zoom, initial layers
-  map = L.map("map", {
+  let mainMap = L.map("map", {
     center: [39.8283, -118.5795],
     zoom: 4,
     layers: [satMap, earthquakes],
@@ -49,77 +47,26 @@ function createMap(earthquakes, tectonicPlates, heat) {
     .layers(baseMap, maps, {
       collapsed: false,
     })
-    .addTo(map);
+    .addTo(mainMap);
 
   // call function to add legend to map
-  let legendToggle = addLegend();
-  legendToggle.addTo(map);
+  let legendToggle = addLegend(earthquakes);
+  legendToggle.addTo(mainMap);
 
   // remove legend if earthquake layer toggled off
-  map.on("overlayremove", function (eventLayer) {
+  mainMap.on("overlayremove", function (eventLayer) {
     if (eventLayer.name === "Earthquakes") {
-      map.removeControl(legendToggle);
+      mainMap.removeControl(legendToggle);
     }
   });
 
   // add legend if earthquake layer toggled on
-  map.on("overlayadd", function (eventLayer) {
+  mainMap.on("overlayadd", function (eventLayer) {
     if (eventLayer.name === "Earthquakes") {
-      legendToggle.addTo(map);
+      legendToggle.addTo(mainMap);
     }
   });
 }
-
-// function to create earthquake marker layer
-function createMarkers(response) {
-  // store data
-  let markers = L.geoJSON(response, {
-    // pointToLayer from the leaflet geoJSON documentation
-    pointToLayer: function (feature, latlng) {
-      // store variables
-      let mag = feature.properties.mag;
-      let depth = feature.geometry.coordinates[2];
-      let datetime = new Date(feature.properties.time);
-
-      // create circle markers and popup
-      let circle = L.circle(latlng, {
-        radius: mag * 10000,
-        // color set by colors() function immediately below
-        color: colors(depth),
-        fillOpacity: 0.9,
-      }).bindPopup(
-        `<h3>Magnitude: ${mag}</h3>
-        Place: ${feature.properties.place}
-        <br>Time: ${datetime.toLocaleString()}
-        <br>${latlng}
-        <br>Depth: ${depth}`,
-      );
-
-      // open popup on mouseover
-      circle.on("mouseover", (e) => circle.openPopup());
-
-      // close popup on mouseout
-      circle.on("mouseout", (e) => circle.closePopup());
-
-      return circle;
-    },
-  });
-
-  // function to change marker color based on depth
-  function colors(depth) {
-    return colorScale(depth);
-  };
-
-  // return entire marker layer
-  return markers;
-};
-
-// create color range for createMarkers() and addLegend()
-// linear scale maps input depth to output colors
-colorScale = d3
-  .scaleLinear()
-  .domain([0, 10, 30, 50, 70, 90])
-  .range(["limegreen", "gold", "orange", "red", "firebrick", "darkred"]);
 
 // create tectonic plates layer
 function tecPlates(plates) {
@@ -134,7 +81,7 @@ function tecPlates(plates) {
 // create heat map layer
 function heatMap(data) {
   // create array to pass to L.heatLayer
-  coords = data.features.map((feature) => [
+  let coords = data.features.map((feature) => [
     feature.geometry.coordinates[1],
     feature.geometry.coordinates[0],
   ]);
@@ -146,8 +93,58 @@ function heatMap(data) {
   });
 }
 
+// function to create earthquake marker layer
+function createMarkers(response) {
+  // store data
+  let markers = L.geoJSON(response, {
+    // pointToLayer from the leaflet geoJSON documentation
+    pointToLayer: (feature, latlng) => {
+      // store variables
+      let mag = feature.properties.mag;
+      let depth = feature.geometry.coordinates[2];
+      let datetime = new Date(feature.properties.time);
+
+      // create circle markers and popup
+      let circle = L.circle(latlng, {
+        radius: mag * 10000,
+        // color set by colors() function immediately below
+        color: colors(depth),
+        fillOpacity: 0.5,
+      }).bindPopup(
+        `<h3>Magnitude: ${mag}</h3>
+        Place: ${feature.properties.place}
+        <br>Time: ${datetime.toLocaleString()}
+        <br>${latlng}
+        <br>Depth: ${depth}`,
+      );
+
+      // open popup on mouseover
+      circle.on("mouseover", (e) => circle.openPopup());
+
+      // close popup on mouseout
+      circle.on("mouseout", (e) => circle.closePopup());
+
+      // return individual marker
+      return circle;
+    },
+  });
+
+  // return entire marker layer
+  return markers;
+}
+
+// create color range for createMarkers() and addLegend()
+function colors(depth) {
+  if (depth < 10) return "limegreen";
+  if (depth < 30) return "gold";
+  if (depth < 50) return "orange";
+  if (depth < 70) return "red";
+  if (depth < 90) return "firebrick";
+  return "darkred";
+}
+
 // create legend
-function addLegend() {
+function addLegend(earthquakes) {
   let legend = L.control({
     position: "bottomright",
   });
@@ -156,21 +153,24 @@ function addLegend() {
   legend.onAdd = function () {
     let div = L.DomUtil.create("div", "custom-legend");
 
-    labels = ["<10", "10-30", "30-50", "50-70", "70-90", "90+"];
+    let labels = ["<10", "10-30", "30-50", "50-70", "70-90", "90+"];
 
+    // add title to legend
     div.innerHTML =
       '<div class="legend-title">Depth (km)<br>below ground</div>';
 
-    // use colorScale() to populate legend
-    colorScale.domain().forEach(function (depth, index) {
-      color = colorScale(depth);
-      div.innerHTML += `<div><i class="legend-color" style="background:${color}"></i>${labels[index]}`;
+    // use colors() and labels[] to populate legend
+    labels.forEach(function (label, index) {
+      // colors((index) *20) because it always returns the right value [0, 20, 40, 60, 80, 100]
+      div.innerHTML += `<div><i class="legend-color" style="background:${colors(
+        index * 20,
+      )}"></i>${labels[index]}`;
     });
 
-    div.innerHTML +=
-      `<div class="legend-mini-text">Earthquake markers
-      <br>scaled to magnitude,
-      <br>USGS, last 30 days</div>`;
+    // add final text to div
+    div.innerHTML += `<div class="legend-mini-text">Earthquake markers
+      <br>scaled to magnitude
+      <br><b>USGS, last 30 days</b></div>`;
 
     return div;
   };
