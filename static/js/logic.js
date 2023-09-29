@@ -35,8 +35,8 @@ function createMap(earthquakes, tectonicPlates, heat) {
 
   // create map with center, zoom, initial layers
   let mainMap = L.map("map", {
-    center: [39.8283, -118.5795],
-    zoom: 4,
+    center: [0, -40],
+    zoom: 3,
     layers: [satMap, earthquakes],
     // loads data when crossing the international date line
     worldCopyJump: true,
