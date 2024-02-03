@@ -1,5 +1,7 @@
 # Module 15 Challenge, 2 October 2023, Javascript and Leaflet, USGS Earthquake map
 
+Link to web page: https://johbry17.github.io/15-earthquakes-leaflet-javascript/
+
 Development on this project has stopped.
 
 ## Table of Contents
