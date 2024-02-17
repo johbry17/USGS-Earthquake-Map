@@ -17,7 +17,7 @@ Development on this project has stopped.
 Visualize United States Geological Survey (USGS) earthquake data to better educate the public and other government organizations (and hopefully secure more funding) on issues facing our planet. Various data layers are added to illustrate the relationship between earthquakes and tectonic plates.
 
 ## Usage
-View the [website](https://johbry17.github.io/15-earthquakes-leaflet-javascript/), and toggle base maps and layers on and off. Experiment with different base maps and layers.
+View the [website](https://johbry17.github.io/USGS-Earthquake-Map/), and toggle base maps and layers on and off. Experiment with different base maps and layers.
 
 ## Gallery
 
