@@ -1,6 +1,6 @@
 # USGS Earthquake Map with JavaScript and Leaflet
 
-Link to web page: https://johbry17.github.io/15-earthquakes-leaflet-javascript/
+Link to web page: https://johbry17.github.io/USGS-Earthquake-Map/
 
 Development on this project has stopped.
 
