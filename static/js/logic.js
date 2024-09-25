@@ -45,7 +45,7 @@ function createMap(earthquakes, tectonicPlates, heat) {
   // create toggle for map layers
   L.control
     .layers(baseMap, maps, {
-      collapsed: false,
+      // collapsed: false,
     })
     .addTo(mainMap);
 
