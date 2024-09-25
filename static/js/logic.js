@@ -168,8 +168,8 @@ function addLegend(earthquakes) {
     });
 
     // add final text to div
-    div.innerHTML += `<div class="legend-mini-text">Earthquake markers
-      <br>scaled to magnitude
+    div.innerHTML += `<div class="legend-mini-text">Markers scaled to
+      <br>earthquake magnitude
       <br><b>USGS, last 30 days</b></div>`;
 
     return div;
