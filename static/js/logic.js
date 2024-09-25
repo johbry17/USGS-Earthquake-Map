@@ -135,7 +135,7 @@ function createMarkers(response) {
 
 // create color range for createMarkers() and addLegend()
 function colors(depth) {
-  if (depth < 10) return "mediumseagreen";
+  if (depth < 10) return "green";
   if (depth < 30) return "gold";
   if (depth < 50) return "orange";
   if (depth < 70) return "red";
