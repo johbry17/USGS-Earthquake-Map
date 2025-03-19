@@ -48,7 +48,7 @@ html {
 }
 
  /* move legend to bottom-left for landscape mode */
-@media (orientation: landscape) and (max-width: 768px) {
+@media (orientation: landscape) and (max-width: 900px) {
   .custom-legend {
     position: fixed;
     bottom: 10px;
