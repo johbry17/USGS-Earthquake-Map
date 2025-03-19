@@ -66,6 +66,9 @@ function createMap(earthquakes, tectonicPlates, heat) {
       legendToggle.addTo(mainMap);
     }
   });
+
+  // set Leaflet attribution control to bottom left
+  mainMap.attributionControl.setPosition("bottomleft");
 }
 
 // function to create earthquake marker layer
