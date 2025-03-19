@@ -35,7 +35,7 @@ function createMap(earthquakes, tectonicPlates, heat) {
 
   // create map with center, zoom, initial layers
   let mainMap = L.map("map", {
-    center: [0, -40],
+    center: [0, -60],
     zoom: 3,
     layers: [satMap, earthquakes],
     // loads data when crossing the international date line
@@ -50,7 +50,7 @@ function createMap(earthquakes, tectonicPlates, heat) {
     .addTo(mainMap);
 
   // call function to add legend to map
-  let legendToggle = addLegend(earthquakes);
+  let legendToggle = addLegend();
   legendToggle.addTo(mainMap);
 
   // remove legend if earthquake layer toggled off
@@ -68,35 +68,14 @@ function createMap(earthquakes, tectonicPlates, heat) {
   });
 }
 
-// create tectonic plates layer
-function tecPlates(plates) {
-  return L.geoJSON(plates, {
-    style: {
-      color: "darkred",
-      weight: 5,
-    },
-  });
-}
-
-// create heat map layer
-function heatMap(data) {
-  // create array to pass to L.heatLayer
-  let coords = data.features.map((feature) => [
-    feature.geometry.coordinates[1],
-    feature.geometry.coordinates[0],
-  ]);
-
-  return L.heatLayer(coords, {
-    radius: 40,
-    blur: 2,
-    gradient: { 0.1: "orange", 0.3: "red", 0.6: "firebrick", 1.0: "darkred" },
-  });
-}
-
 // function to create earthquake marker layer
 function createMarkers(response) {
+  // wrap geoJSON data - duplicate and shift left and right
+  // for crossing the international date line
+  let wrappedMarkers = wrapGeoJSON(response);
+
   // store data
-  let markers = L.geoJSON(response, {
+  let markers = L.geoJSON(wrappedMarkers, {
     // pointToLayer from the leaflet geoJSON documentation
     pointToLayer: (feature, latlng) => {
       // store variables
@@ -107,7 +86,7 @@ function createMarkers(response) {
       // create circle markers and popup
       let circle = L.circle(latlng, {
         radius: mag * 10000,
-        // color set by colors() function immediately below
+        // color set by colors() function below
         color: colors(depth),
         fillOpacity: 0.5,
       }).bindPopup(
@@ -131,6 +110,95 @@ function createMarkers(response) {
 
   // return entire marker layer
   return markers;
+}
+
+// create tectonic plates layer
+function tecPlates(plates) {
+  // duplicate the plates layer and shift it to the left and right
+  // for crossing the international date line
+  let wrappedPlates = wrapGeoJSON(plates);
+
+  // return layer
+  return L.geoJSON(wrappedPlates, {
+    style: {
+      color: "darkred",
+      weight: 5,
+    },
+  });
+}
+
+// function to wrap geoJSON data
+// basically duplicates the data and shifts it to the left and right
+// so I can display the data across the international date line
+function wrapGeoJSON(geojsonLayer) {
+  let wrappedFeatures = [];
+
+  geojsonLayer.features.forEach((feature) => {
+    // original feature
+    wrappedFeatures.push(feature);
+
+    // duplicate and shift -360 degrees
+    let leftFeature = JSON.parse(JSON.stringify(feature));
+    leftFeature.geometry.coordinates = shiftCoordinates(
+      leftFeature.geometry.coordinates,
+      -360
+    );
+    wrappedFeatures.push(leftFeature);
+
+    // duplicate and shift +360 degrees
+    let rightFeature = JSON.parse(JSON.stringify(feature));
+    rightFeature.geometry.coordinates = shiftCoordinates(
+      rightFeature.geometry.coordinates,
+      360
+    );
+    wrappedFeatures.push(rightFeature);
+  });
+
+  return { type: "FeatureCollection", features: wrappedFeatures };
+}
+
+// function to shift coordinates
+// basically just adds or subtracts 360 degrees from the longitude
+function shiftCoordinates(coords, shift) {
+  if (Array.isArray(coords[0])) {
+    // recursively handle nested coordinates (tectonic plates polygons)
+    return coords.map((c) => shiftCoordinates(c, shift));
+  }
+  // return shifted longitude, latitude unchanged
+  return [coords[0] + shift, coords[1]];
+}
+
+// create heat map layer
+function heatMap(data) {
+  // create array to pass to L.heatLayer
+  let wrappedCoords = [];
+
+  // duplicate and shift layer left and right
+  // for crossing the international date line
+  data.features.forEach((feature) => {
+    let coords = feature.geometry.coordinates;
+
+    // original coordinates
+    wrappedCoords.push([coords[1], coords[0]]);
+
+    // shifted -360 degrees
+    wrappedCoords.push([coords[1], coords[0] - 360]);
+
+    // shifted +360 degrees
+    wrappedCoords.push([coords[1], coords[0] + 360]);
+  });
+
+  // return layer
+  return L.heatLayer(wrappedCoords, {
+    radius: 40,
+    blur: 2,
+    gradient: {
+      0.1: "orange",
+      0.3: "red",
+      0.6: "firebrick",
+      1.0: "darkred",
+    },
+  });
 }
 
 // create color range for createMarkers() and addLegend()
@@ -170,7 +238,8 @@ function createMarkers(response) {
 //   return "#252525"; // Black
 // }
 
-function colors(depth) { // Heat Map
+function colors(depth) {
+  // Heat Map
   if (depth < 10) return "#ffffcc"; // Pale Yellow
   if (depth < 30) return "#ffeda0"; // Light Yellow
   if (depth < 50) return "#feb24c"; // Orange
@@ -198,7 +267,7 @@ function colors(depth) { // Heat Map
 // }
 
 // create legend
-function addLegend(earthquakes) {
+function addLegend() {
   let legend = L.control({
     position: "bottomright",
   });
