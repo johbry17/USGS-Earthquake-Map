@@ -1,13 +1,13 @@
 // call USGS eathquake data for the past month with d3
 d3.json(
-  "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson",
+  "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson"
 ).then(function (earthquakes) {
   d3.json("static/data/tectonic_plates.json").then((plates) => {
     // createMarkers, tecPlates, heatMap are all layers added to createMap
     createMap(
       createMarkers(earthquakes),
       tecPlates(plates),
-      heatMap(earthquakes),
+      heatMap(earthquakes)
     );
   });
 });
@@ -74,9 +74,9 @@ function tecPlates(plates) {
     style: {
       color: "darkred",
       weight: 5,
-    }
+    },
   });
-};
+}
 
 // create heat map layer
 function heatMap(data) {
@@ -91,7 +91,7 @@ function heatMap(data) {
     blur: 2,
     gradient: { 0.1: "orange", 0.3: "red", 0.6: "firebrick", 1.0: "darkred" },
   });
-};
+}
 
 // function to create earthquake marker layer
 function createMarkers(response) {
@@ -115,7 +115,7 @@ function createMarkers(response) {
         Place: ${feature.properties.place}
         <br>Time: ${datetime.toLocaleString()}
         <br>${latlng}
-        <br>Depth: ${depth}`,
+        <br>Depth: ${depth}`
       );
 
       // open popup on mouseover
@@ -134,14 +134,68 @@ function createMarkers(response) {
 }
 
 // create color range for createMarkers() and addLegend()
-function colors(depth) {
-  if (depth < 10) return "green";
-  if (depth < 30) return "gold";
-  if (depth < 50) return "orange";
-  if (depth < 70) return "red";
-  if (depth < 90) return "firebrick";
-  return "darkred";
+// function colors(depth) { // Original Colors
+//   if (depth < 10) return "green";
+//   if (depth < 30) return "gold";
+//   if (depth < 50) return "orange";
+//   if (depth < 70) return "red";
+//   if (depth < 90) return "firebrick";
+//   return "darkred";
+// }
+
+// function colors(depth) { // Earth Tones
+//   if (depth < 10) return "#A3C586"; // Muted Green
+//   if (depth < 30) return "#E1C16E"; // Sand
+//   if (depth < 50) return "#D08C60"; // Rust
+//   if (depth < 70) return "#B35A3C"; // Burnt Orange
+//   if (depth < 90) return "#8A3324"; // Brick Red
+//   return "#5A1E1E"; // Deep Maroon
+// }
+
+// function colors(depth) { // Sunset Gradient
+//   if (depth < 10) return "#ffcccb"; // Light Pink
+//   if (depth < 30) return "#ff9966"; // Peach
+//   if (depth < 50) return "#ff6666"; // Coral
+//   if (depth < 70) return "#cc3333"; // Crimson
+//   if (depth < 90) return "#990000"; // Dark Red
+//   return "#660000"; // Deep Burgundy
+// }
+
+// function colors(depth) { // Grayscale
+//   if (depth < 10) return "#f0f0f0"; // Light Gray
+//   if (depth < 30) return "#d9d9d9"; // Medium Light Gray
+//   if (depth < 50) return "#bdbdbd"; // Medium Gray
+//   if (depth < 70) return "#969696"; // Dark Gray
+//   if (depth < 90) return "#636363"; // Very Dark Gray
+//   return "#252525"; // Black
+// }
+
+function colors(depth) { // Heat Map
+  if (depth < 10) return "#ffffcc"; // Pale Yellow
+  if (depth < 30) return "#ffeda0"; // Light Yellow
+  if (depth < 50) return "#feb24c"; // Orange
+  if (depth < 70) return "#f03b20"; // Bright Red
+  if (depth < 90) return "#bd0026"; // Dark Red
+  return "#800026"; // Deep Red
 }
+
+// function colors(depth) { // Viridis
+//   if (depth < 10) return "#440154"; // Dark Purple
+//   if (depth < 30) return "#3b528b"; // Purple
+//   if (depth < 50) return "#21918c"; // Teal
+//   if (depth < 70) return "#5ec962"; // Light Green
+//   if (depth < 90) return "#fde725"; // Yellow
+//   return "#fee08b"; // Light Yellow
+// }
+
+// function colors(depth) { // Blues
+//   if (depth < 10) return "#d4f1f9"; // Light Blue
+//   if (depth < 30) return "#76c7f2"; // Sky Blue
+//   if (depth < 50) return "#1f78b4"; // Medium Blue
+//   if (depth < 70) return "#08306b"; // Dark Blue
+//   if (depth < 90) return "#041f4a"; // Navy Blue
+//   return "#021026"; // Deep Ocean
+// }
 
 // create legend
 function addLegend(earthquakes) {
@@ -163,7 +217,7 @@ function addLegend(earthquakes) {
     labels.forEach(function (label, index) {
       // colors((index) *20) because it always returns the right value [0, 20, 40, 60, 80, 100]
       div.innerHTML += `<div><i class="legend-color" style="background:${colors(
-        index * 20,
+        index * 20
       )}"></i>${labels[index]}`;
     });
 
