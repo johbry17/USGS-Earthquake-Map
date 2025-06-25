@@ -68,7 +68,12 @@ function createMap(earthquakes, tectonicPlates, heat) {
   });
 
   // set Leaflet attribution control to bottom left
-  mainMap.attributionControl.setPosition("bottomleft");
+  mainMap.attributionControl.setPosition("bottomleft").addAttribution(`
+    &copy; ${new Date().getFullYear()} Bryan Johns. | 
+    <a href="https://johbry17.github.io/portfolio/index.html" target="_blank" aria-label="Portfolio"><i class="fas fa-laptop"></i> Portfolio</a> | 
+    <a href="https://www.linkedin.com/in/b-johns/" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i> LinkedIn</a> | 
+    <a href="https://github.com/johbry17/USGS-Earthquake-Map" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i> GitHub</a>
+  `);
 }
 
 // function to create earthquake marker layer
