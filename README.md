@@ -6,8 +6,6 @@
 
 > ⚠️ This project is archived and no longer actively maintained, but remains available as a portfolio example.
 
-Development on this project has stopped.
-
 ## Table of Contents
 
 - [Project Overview](#project-overview)
@@ -49,7 +47,7 @@ Originally built as a hands-on geospatial exercise, this dashboard illustrates t
 
 Visit the live site [here](https://johbry17.github.io/USGS-Earthquake-Map/).  
 Use the layer control to:
-- Switch between street and satellite base maps.
+- Switch between multiple base maps.
 - Toggle earthquake markers, tectonic plates, and heatmaps.
 - Explore real-time USGS data in geographic context.
 
@@ -59,17 +57,18 @@ Earthquake Markers:
 
 ![Markers for earthquakes](./static/images/earthquakeMarkers.png)
 
-Tectonic plate Overlay:
+Tectonic Plate Overlay:
 
 ![Tectonic plates](./static/images/tectonicPlates.png)
 
-Heat map View:
+Heat Map View:
 
 ![Heat map](./static/images/markesPlatesHeat.png)
 
 ## References
 
-Dataset provided by the  [USGS Earthquake API](http://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)
+-  [USGS Earthquake API](http://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)
+- Tectonic plate boundaries from [github.com/fraxen/tectonicplates](https://github.com/fraxen/tectonicplates)
 
 ## Acknowledgements
 
