@@ -25,12 +25,12 @@ Originally built as a hands-on geospatial exercise, this dashboard illustrates t
 
 ## Features
 
-- 🗺️ **Interactive Map** built with Leaflet.js and D3  
-- 🌍 **Real-time USGS earthquake data** with size and color-coded markers  
-- 🔥 **Heatmap overlay** for frequency and density  
-- 🧭 **Tectonic plate boundaries** toggleable for geologic context  
-- 🧩 **Custom basemaps and layers** with full toggle control  
-- 📱 **Mobile-responsive layout**
+- **Interactive Map** built with Leaflet.js and D3  
+- **Real-time USGS earthquake data** with size and color-coded markers  
+- **Heatmap overlay** for frequency and density  
+- **Tectonic plate boundaries** toggleable for geologic context  
+- **Custom basemaps and layers** with full toggle control  
+- **Mobile-responsive layout**
 
 ## Tools & Technologies
 
