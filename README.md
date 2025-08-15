@@ -4,7 +4,7 @@
 
 🌍 [Live Map](https://johbry17.github.io/USGS-Earthquake-Map/)
 
-> ⚠️ This project is archived and no longer actively maintained, but remains available as a portfolio example.
+> ℹ️ This project is archived and no longer actively maintained, but remains available as a portfolio example.
 
 ## Table of Contents
 
