@@ -47,12 +47,53 @@ html {
   }
 }
 
- /* move legend to bottom-left for landscape mode */
+/* move legend to bottom-left for landscape mode */
 @media (orientation: landscape) and (max-width: 900px) {
   .custom-legend {
     position: fixed;
     bottom: 10px;
     left: 10px;
     z-index: 1000;
+  }
+}
+
+/* footer tagline styles */
+.leaflet-control-attribution .footer-tagline {
+  font-size: 1.05em;
+  color: #444;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  display: block;
+  margin-top: 4px;
+}
+.leaflet-control-attribution .footer-author,
+.leaflet-control-attribution .footer-links {
+  display: block;
+  padding-top: 2px;
+}
+/* center attribution control */
+.leaflet-control-attribution {
+  text-align: center;
+  white-space: normal;
+  padding: 6px;
+  box-sizing: border-box;
+}
+@media (max-width: 480px) {
+  .leaflet-control-attribution {
+    font-size: 11px;
+  }
+  .leaflet-control-attribution .footer-author {
+    margin-top: 2px;
+  }
+  .leaflet-control-attribution .footer-links {
+    display: block;
+  }
+  .leaflet-control-attribution .footer-links a {
+    margin: 2px 0;
+    display: inline-block;
+  }
+  .leaflet-control-attribution .footer-tagline {
+    margin-top: 0px;
   }
 }
